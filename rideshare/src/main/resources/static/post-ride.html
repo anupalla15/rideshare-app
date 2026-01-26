@@ -128,11 +128,28 @@
     const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser")); // Retrieved from user-home.html logic
 
     function updateStepVisibility() {
-        formSteps.forEach((step, index) => {
-            step.classList.toggle('hidden', index + 1 !== currentStep);
+    formSteps.forEach((step, index) => {
+        const isVisible = index + 1 === currentStep;
+        step.classList.toggle('hidden', !isVisible);
+
+        // IMPORTANT FIX
+        step.querySelectorAll("input, select").forEach(input => {
+            if (isVisible) {
+                input.disabled = false;
+                if (input.requiredOriginal) input.required = true;
+            } else {
+                input.disabled = true;
+                if (input.required) {
+                    input.requiredOriginal = true;
+                    input.required = false;
+                }
+            }
         });
-        stepTitle.textContent = currentStep;
-    }
+    });
+
+    stepTitle.textContent = currentStep;
+}
+
 
     function validateStep(step) {
         let isValid = true;

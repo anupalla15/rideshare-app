@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unified Dashboard</title>
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Optional CSS -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ================= LOGIN SECTION ================= -->
+<div id="loginSection" class="box">
+    <h2>Login</h2>
+
+    <form id="userLoginForm">
+        <label>Email</label><br>
+        <input type="email" id="email" required><br><br>
+
+        <label>Password</label><br>
+        <input type="password" id="password" required><br><br>
+
+        <button type="submit">Login</button>
+    </form>
+</div>
+
+<!-- ================= ADMIN DASHBOARD ================= -->
+<div id="adminSection" class="box" style="display:none;">
+    <h2>Admin Dashboard</h2>
+    <p>Manage users, drivers, and system settings.</p>
+</div>
+
+<!-- ================= DRIVER DASHBOARD ================= -->
+<div id="driverSection" class="box" style="display:none;">
+    <h2>Driver Dashboard</h2>
+    <p>View assigned rides and update trip status.</p>
+</div>
+
+<!-- ================= PASSENGER DASHBOARD ================= -->
+<div id="passengerSection" class="box" style="display:none;">
+    <h2>Passenger Dashboard</h2>
+    <p>Book rides and track your trips.</p>
+</div>
+
+<!-- ================= JS ================= -->
+<script>
+    // Backend base URL (ni project batti adjust cheyyi)
+    const BASE_URL = "http://localhost:8080";
+</script>
+
+<script src="js/user.js"></script>
+
+</body>
+</html>

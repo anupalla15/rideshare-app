@@ -42,10 +42,18 @@ public class AdminReportingService {
                 .mapToDouble(Payment::getAmount)
                 .sum());
 
-        // 5. Ride Cancellations & Disputes (Bookings that are DENIED or CANCELED)
-        report.setTotalCancellations(bookingRepository.findAll().stream()
-                .filter(b -> b.getStatus().equalsIgnoreCase("DENIED") || b.getStatus().equalsIgnoreCase("CANCELED"))
-                .count());
+        // 5. FIXED: Prevent NullPointerException on booking status
+        report.setTotalCancellations(
+                bookingRepository.findAll().stream()
+                        .filter(b -> {
+                            String status = b.getStatus();
+                            return status != null && (
+                                    status.equalsIgnoreCase("DENIED") ||
+                                            status.equalsIgnoreCase("CANCELED")
+                            );
+                        })
+                        .count()
+        );
 
         return report;
     }

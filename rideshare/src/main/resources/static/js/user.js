@@ -1,7 +1,6 @@
 // src/main/resources/static/js/user.js
 
-// BASE URL for backend API
-const BASE_URL = "http://localhost:8080/api/auth";
+
 
 // =================== UNIFIED LOGIN ===================
 const userLoginForm = document.getElementById("userLoginForm");

@@ -34,6 +34,11 @@ public class PaymentService {
         Stripe.apiKey = stripeSecretKey;
         long amountInPaise = (long) (amount * 100);
 
+// Stripe requires at least ₹50 (5000 paise)
+        if (amountInPaise < 5000) {
+            amountInPaise = 5000;
+        }
+
         try {
             // Step 1: Create a Payment Intent on the server to get the client secret
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()

@@ -1,6 +1,7 @@
 // js/common.js
 
-//const BASE_URL = "http://localhost:8080/api/auth";
+// IMPORTANT: BASE_URL MUST be enabled
+const BASE_URL = "http://localhost:8080/api/auth";
 
 // Reusable POST request function
 async function postData(url = "", data = {}) {
@@ -19,12 +20,11 @@ async function postData(url = "", data = {}) {
     return await response.text();
   } catch (error) {
     console.error("Error:", error);
-    //alert("Error: " + error.message);
     Swal.fire({
-          icon: 'error',
-          title: 'API Error!',
-          text: "Error: " + error.message,
-        });
+      icon: "error",
+      title: "API Error!",
+      text: "Error: " + error.message,
+    });
     throw error;
   }
 }
@@ -37,28 +37,28 @@ async function getData(url = "") {
     return await response.json();
   } catch (error) {
     console.error("Error:", error);
-    //alert("Error fetching data: " + error.message);
     Swal.fire({
-          icon: 'error',
-          title: 'API Error!',
-          text: "Error fetching data: " + error.message,
-        });
+      icon: "error",
+      title: "API Error!",
+      text: "Error fetching data: " + error.message,
+    });
   }
 }
 
 // Reusable DELETE request function
 async function deleteData(url = "") {
   try {
-    const response = await fetch(`${BASE_URL}${url}`, { method: "DELETE" });
+    const response = await fetch(`${BASE_URL}${url}`, {
+      method: "DELETE",
+    });
     if (!response.ok) throw new Error("Failed to delete data");
     return await response.text();
   } catch (error) {
     console.error("Error:", error);
-    //alert("Error deleting data: " + error.message);
     Swal.fire({
-          icon: 'error',
-          title: 'API Error!',
-          text: "Error deleting data: " + error.message,
-        });
+      icon: "error",
+      title: "API Error!",
+      text: "Error deleting data: " + error.message,
+    });
   }
 }

@@ -60,9 +60,10 @@ public class RideController {
             throw new RuntimeException("Posting failed: Your account is currently blocked.");
         }
 
-        if (!driver.isVerified()) { //
+        if (!driver.isVerified()) {
             throw new RuntimeException("Posting failed: Your account is not yet verified by admin. Please wait for verification.");
         }
+
         // END NEW SECURITY CHECKS
 
         List<String> imagePaths = new ArrayList<>();

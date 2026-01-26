@@ -1,363 +1,210 @@
 // rideshare/src/main/resources/static/js/admin-dashboard.js
 
 let allUsers = [];
-let userRoleChartInstance = null; // Variable to hold the pie chart instance
-const BASE_REPORT_URL = "http://localhost:8080/api/"; // Base URL for monitoring endpoints
-
-// =================== BUTTON AND NAVIGATION LOGIC ===================
+let userRoleChartInstance = null; // Pie chart instance
+BASE_REPORT_URL = "http://localhost:8080/api/"
+ // Monitoring endpoints
+// =================== BUTTON AND NAVIGATION ===================
 
 const onboardBtn = document.getElementById("onboardBtn");
 if (onboardBtn) {
-  onboardBtn.addEventListener("click", () => {
-    window.location.href = "admin-onboard-user.html";
-  });
+    onboardBtn.addEventListener("click", () => {
+        window.location.href = "admin-onboard-user.html";
+    });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     loadUsers();
 
-    // Attach listener for the new "Monitor All Data" button
     const monitorDataBtn = document.getElementById("monitorDataBtn");
     if (monitorDataBtn) {
         monitorDataBtn.addEventListener("click", async () => {
             Swal.fire({
-                title: 'Monitoring Dashboard',
+                title: "Monitoring Dashboard",
                 html:
-                    'Select the data stream you want to monitor (first 10 records shown):<br>' +
-                    '<button id="viewRidesBtn" class="swal2-styled" style="margin: 10px 5px; background-color: #4facfe;">View All Rides</button>' +
-                    '<button id="viewBookingsBtn" class="swal2-styled" style="margin: 10px 5px; background-color: #4facfe;">View All Bookings</button>' +
-                    '<button id="viewPaymentsBtn" class="swal2-styled" style="margin: 10px 5px; background-color: #4facfe;">View All Payments</button>',
+                    'Select the data stream you want to monitor:<br>' +
+                    '<button id="viewRidesBtn" class="swal2-styled" style="margin:10px;background-color:#4facfe;">Rides</button>' +
+                    '<button id="viewBookingsBtn" class="swal2-styled" style="margin:10px;background-color:#4facfe;">Bookings</button>' +
+                    '<button id="viewPaymentsBtn" class="swal2-styled" style="margin:10px;background-color:#4facfe;">Payments</button>',
                 showCancelButton: true,
                 showConfirmButton: false,
                 didOpen: () => {
-                    document.getElementById('viewRidesBtn').addEventListener('click', () => viewDataStream('Rides', BASE_REPORT_URL + 'rides/admin/rides'));
-                    document.getElementById('viewBookingsBtn').addEventListener('click', () => viewDataStream('Bookings', BASE_REPORT_URL + 'booking/admin/bookings'));
-                    document.getElementById('viewPaymentsBtn').addEventListener('click', () => viewDataStream('Payments', BASE_REPORT_URL + 'payments/admin/payments'));
+                    document.getElementById("viewRidesBtn")
+                        .addEventListener("click", () => viewDataStream("Rides", BASE_REPORT_URL + "rides/admin/rides"));
+                    document.getElementById("viewBookingsBtn")
+                        .addEventListener("click", () => viewDataStream("Bookings", BASE_REPORT_URL + "booking/admin/bookings"));
+                    document.getElementById("viewPaymentsBtn")
+                        .addEventListener("click", () => viewDataStream("Payments", BASE_REPORT_URL + "payments/admin/payments"));
                 }
             });
         });
     }
 });
 
-// =================== LOGIC: CHART RENDERING ===================
+// =================== PIE CHART ===================
 
-// MODIFIED PIE CHART: Displays Drivers, Passengers, Total Rides, and Total Bookings
 function renderChart(driverCount, passengerCount, ridesCount, bookingsCount) {
-    const ctx = document.getElementById('userRoleChart');
+    const ctx = document.getElementById("userRoleChart");
 
-    // Destroy existing chart if it exists
-    if (userRoleChartInstance) {
-        userRoleChartInstance.destroy();
-    }
+    if (userRoleChartInstance) userRoleChartInstance.destroy();
 
     userRoleChartInstance = new Chart(ctx, {
-        type: 'pie',
+        type: "pie",
         data: {
-            labels: ['Drivers', 'Passengers', 'Total Rides', 'Total Bookings'],
+            labels: ["Drivers", "Passengers", "Total Rides", "Total Bookings"],
             datasets: [{
-                label: 'System Distribution',
                 data: [driverCount, passengerCount, ridesCount, bookingsCount],
-                backgroundColor: [
-                    '#43e97b', // Green (Drivers)
-                    '#f76b1c', // Orange (Passengers)
-                    '#ff9b6b', // Light Orange (Rides)
-                    '#6f54ff'  // Purple (Bookings)
-                ],
+                backgroundColor: ["#43e97b", "#f76b1c", "#ff9b6b", "#6f54ff"],
                 hoverOffset: 8
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        color: '#333'
-                    }
-                },
-                title: {
-                    display: false,
-                }
+                legend: { position: "bottom" }
             }
         }
     });
 }
 
+// =================== COUNTS ===================
 
-// =================== LOGIC: CALCULATE AND DISPLAY ROLE COUNTS AND REPORTS ===================
+function updateCounts(users) {
+    const driverCount = users.filter(u => u.roleType === "DRIVER").length;
+    const passengerCount = users.filter(u => u.roleType === "PASSENGER").length;
 
-function updateCounts(users, isFiltered = false) {
-    // 1. Calculate counts for all roles
-    const driverCount = users.filter(user => user.roleType === 'DRIVER').length;
-    const passengerCount = users.filter(user => user.roleType === 'PASSENGER').length;
-    const totalMatchingUsers = users.length;
-
-    // 2. Update the HTML badges with FILTERED/MATCHING counts
-    document.getElementById('usBadgeCount').textContent = totalMatchingUsers;
-    document.getElementById('driverCount').textContent = driverCount;
-    document.getElementById('passengerCount').textContent = passengerCount;
-
-    // 3. The overall header count reflects the total system state.
-    if (!isFiltered) {
-        // The display logic for total users is intentionally removed from the filters row
-        // document.getElementById('totalUsersCountDisplay').textContent = allUsers.length;
-    }
+    document.getElementById("usBadgeCount").textContent = users.length;
+    document.getElementById("driverCount").textContent = driverCount;
+    document.getElementById("passengerCount").textContent = passengerCount;
 }
 
-// MODIFIED: Load Aggregated Reports (Rides, Earnings, BKS) and Render Chart
+// =================== LOAD REPORTS ===================
+// FIXED: CORRECT PATH → "/auth/admin/report"
+
 async function loadReports() {
     try {
-        // Calls the new endpoint: /api/auth/admin/report
         const report = await getData("/admin/report");
 
         if (report) {
-            document.getElementById('totalRidesCount').textContent = report.totalRides || 0;
-            document.getElementById('totalEarnings').textContent = `₹${(report.totalEarnings || 0).toFixed(2)}`;
-            document.getElementById('totalBookingsCount').textContent = report.totalBookings || 0;
+            document.getElementById("totalRidesCount").textContent = report.totalRides || 0;
+            document.getElementById("totalEarnings").textContent = `₹${(report.totalEarnings || 0).toFixed(2)}`;
+            document.getElementById("totalBookingsCount").textContent = report.totalBookings || 0;
+            document.getElementById("overview-earnings-value").textContent =
+                `₹${(report.totalEarnings || 0).toFixed(2)}`;
 
-            // Update the large earnings overview card
-            document.getElementById('overview-earnings-value').textContent = `₹${(report.totalEarnings || 0).toFixed(2)}`;
+            const driverCount = allUsers.filter(u => u.roleType === "DRIVER").length;
+            const passengerCount = allUsers.filter(u => u.roleType === "PASSENGER").length;
 
-            // Get User Counts from the globally available list for the chart
-            const driverCount = allUsers.filter(user => user.roleType === 'DRIVER').length;
-            const passengerCount = allUsers.filter(user => user.roleType === 'PASSENGER').length;
-
-            // RENDER PIE CHART with the four requested metrics
-            renderChart(
-                driverCount,
-                passengerCount,
-                report.totalRides,
-                report.totalBookings
-            );
+            renderChart(driverCount, passengerCount, report.totalRides, report.totalBookings);
         }
-
-    } catch (error) {
-        console.error("Failed to load aggregated report data:", error);
+    } catch (err) {
+        console.error("Failed to load reports:", err);
     }
 }
 
-async function loadUsers() {
-    if (typeof BASE_URL === 'undefined') {
-        console.error("Critical: BASE_URL is still undefined.");
-        return;
-    }
+// =================== LOAD USERS ===================
+// FIXED: CORRECT PATH → "/admin/users" (BASE_URL adds /auth)
 
+async function loadUsers() {
     try {
         const users = await getData("/admin/users");
         allUsers = Array.isArray(users) ? users : [];
 
-        updateCounts(allUsers, false);
-        loadReports(); // Call new function to load report data AND render chart
+        updateCounts(allUsers);
+        await loadReports();
 
-    } catch (error) {
-        console.error("Failed to load users:", error);
+    } catch (err) {
+        console.error("Failed to load users:", err);
     }
 }
 
+// =================== MONITOR VIEW ===================
 
-// MODIFIED FUNCTION: Generic Data Viewer for Monitoring All Data with Pagination and Search
 let monitorDataCache = [];
 let monitorCurrentPage = 1;
+let monitorSearchTerm = "";
 const monitorItemsPerPage = 10;
-let monitorSearchTerm = '';
 
 async function viewDataStream(title, url) {
     Swal.fire({
-        title: `Loading All ${title}`,
-        text: 'Fetching full dataset from backend...',
+        title: `Loading ${title}...`,
         allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
+        didOpen: () => Swal.showLoading()
     });
-
-    // List of keys to exclude from display
-    const EXCLUDED_KEYS = [
-        'sourceLatitude',
-        'sourceLongitude',
-        'destinationLatitude',
-        'destinationLongitude',
-        'vehicleImageReference'
-    ];
 
     try {
         const response = await fetch(url);
-        if (!response.ok) throw new Error("Failed to fetch data.");
-        const data = await response.json();
-        
-        // Store data in cache
-        monitorDataCache = data;
+        if (!response.ok) throw new Error("Failed to fetch data");
+
+        monitorDataCache = await response.json();
         monitorCurrentPage = 1;
-        monitorSearchTerm = '';
+        monitorSearchTerm = "";
 
-        displayMonitorData(title, EXCLUDED_KEYS);
+        displayMonitorData(title);
 
-    } catch (error) {
-        Swal.fire('Error', `Failed to load ${title.toLowerCase()}: ${error.message}`, 'error');
+    } catch (err) {
+        Swal.fire("Error", err.message, "error");
     }
 }
 
-function displayMonitorData(title, excludedKeys) {
-    // Filter data based on search term
-    let filteredData = monitorDataCache;
-    if (monitorSearchTerm) {
-        filteredData = monitorDataCache.filter(item => {
-            return Object.values(item).some(value => {
-                if (value === null || value === undefined) return false;
-                return String(value).toLowerCase().includes(monitorSearchTerm.toLowerCase());
-            });
-        });
-    }
+function displayMonitorData(title) {
+    let filteredData = monitorSearchTerm
+        ? monitorDataCache.filter(item =>
+            Object.values(item).some(val =>
+                String(val).toLowerCase().includes(monitorSearchTerm.toLowerCase())
+            ))
+        : monitorDataCache;
 
     const totalPages = Math.ceil(filteredData.length / monitorItemsPerPage);
     const startIndex = (monitorCurrentPage - 1) * monitorItemsPerPage;
-    const endIndex = startIndex + monitorItemsPerPage;
-    const pageData = filteredData.slice(startIndex, endIndex);
+    const pageData = filteredData.slice(startIndex, startIndex + monitorItemsPerPage);
 
-    let tableHtml = '<div style="margin-bottom: 15px;">';
-    tableHtml += '<input type="text" id="monitorSearchInput" placeholder="Search..." style="padding: 8px; border: 1px solid #ccc; border-radius: 5px; width: 300px; margin-right: 10px;" value="' + monitorSearchTerm + '">';
-    tableHtml += '<span style="color: #333;">Showing ' + (startIndex + 1) + '-' + Math.min(endIndex, filteredData.length) + ' of ' + filteredData.length + ' records</span>';
-    tableHtml += '</div>';
-    
-    tableHtml += '<div style="max-height: 400px; overflow-y: auto;">';
-    if (filteredData.length === 0) {
-        tableHtml += `<p>No ${title.toLowerCase()} found.</p>`;
+    // HTML table
+    let html = `
+      <input id="monitorSearchInput" placeholder="Search..." style="padding:8px;width:300px;margin-bottom:10px;">
+      <div style="max-height:400px;overflow-y:auto;">
+    `;
+
+    if (pageData.length === 0) {
+        html += "<p>No data found.</p>";
     } else {
-        // Get all keys and filter out the excluded ones
-        const allKeys = Object.keys(monitorDataCache[0]);
-        const filteredKeys = allKeys.filter(key => !excludedKeys.includes(key));
+        const keys = Object.keys(pageData[0]);
 
-        tableHtml += `<table style="width:100%; font-size: 0.8em; border-collapse: collapse;"><thead><tr>`;
-        filteredKeys.forEach(key => tableHtml += `<th style="border: 1px solid #ccc; padding: 5px; background-color: #f0f0f0;">${key}</th>`);
-        tableHtml += `</tr></thead><tbody>`;
+        html += "<table style='width:100%;font-size:0.8em;border-collapse:collapse;'><thead><tr>";
+        keys.forEach(k => html += `<th style="border:1px solid #ccc;padding:5px;">${k}</th>`);
+        html += "</tr></thead><tbody>";
 
-        pageData.forEach(item => {
-            tableHtml += `<tr>`;
-            filteredKeys.forEach(key => {
-                let value = item[key];
-                if (typeof value === 'object' && value !== null) {
-                    value = JSON.stringify(value);
-                }
-                if (typeof value === 'string' && value.length > 30) {
-                    value = value.substring(0, 30) + '...'; // Truncate long strings
-                }
-                tableHtml += `<td style="border: 1px solid #ccc; padding: 5px; text-align: left;">${value}</td>`;
-            });
-            tableHtml += `</tr>`;
+        pageData.forEach(row => {
+            html += "<tr>";
+            keys.forEach(k => html += `<td style="padding:5px;border:1px solid #ccc;">${row[k]}</td>`);
+            html += "</tr>";
         });
-        tableHtml += `</tbody></table>`;
-    }
-    tableHtml += '</div>';
 
-    // Add pagination controls
-    if (totalPages > 1) {
-        tableHtml += '<div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px;">';
-        tableHtml += '<button id="monitorFirstPage" style="padding: 8px 12px; background-color: #4facfe; color: white; border: none; border-radius: 5px; cursor: pointer;" ' + (monitorCurrentPage === 1 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : '') + '>First</button>';
-        tableHtml += '<button id="monitorPrevPage" style="padding: 8px 12px; background-color: #4facfe; color: white; border: none; border-radius: 5px; cursor: pointer;" ' + (monitorCurrentPage === 1 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : '') + '>Previous</button>';
-        tableHtml += '<span style="color: #333;">Page ' + monitorCurrentPage + ' of ' + totalPages + '</span>';
-        tableHtml += '<button id="monitorNextPage" style="padding: 8px 12px; background-color: #4facfe; color: white; border: none; border-radius: 5px; cursor: pointer;" ' + (monitorCurrentPage === totalPages ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : '') + '>Next</button>';
-        tableHtml += '<button id="monitorLastPage" style="padding: 8px 12px; background-color: #4facfe; color: white; border: none; border-radius: 5px; cursor: pointer;" ' + (monitorCurrentPage === totalPages ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : '') + '>Last</button>';
-        tableHtml += '</div>';
+        html += "</tbody></table>";
     }
+
+    html += "</div>";
 
     Swal.fire({
-        title: `Monitoring: All ${title}`,
-        html: tableHtml,
-        width: '95%',
-        showConfirmButton: true,
-        confirmButtonText: 'Close',
+        title: `Monitoring: ${title}`,
+        html,
+        width: "90%",
+        confirmButtonText: "Close",
         didOpen: () => {
-            // Attach event listeners
-            const searchInput = document.getElementById('monitorSearchInput');
-            if (searchInput) {
-                searchInput.addEventListener('input', (e) => {
-                    monitorSearchTerm = e.target.value;
-                    monitorCurrentPage = 1;
-                    displayMonitorData(title, excludedKeys);
-                });
-            }
-
-            const firstBtn = document.getElementById('monitorFirstPage');
-            if (firstBtn) {
-                firstBtn.addEventListener('click', () => {
-                    monitorCurrentPage = 1;
-                    displayMonitorData(title, excludedKeys);
-                });
-            }
-
-            const prevBtn = document.getElementById('monitorPrevPage');
-            if (prevBtn) {
-                prevBtn.addEventListener('click', () => {
-                    if (monitorCurrentPage > 1) {
-                        monitorCurrentPage--;
-                        displayMonitorData(title, excludedKeys);
-                    }
-                });
-            }
-
-            const nextBtn = document.getElementById('monitorNextPage');
-            if (nextBtn) {
-                nextBtn.addEventListener('click', () => {
-                    const totalPages = Math.ceil(filteredData.length / monitorItemsPerPage);
-                    if (monitorCurrentPage < totalPages) {
-                        monitorCurrentPage++;
-                        displayMonitorData(title, excludedKeys);
-                    }
-                });
-            }
-
-            const lastBtn = document.getElementById('monitorLastPage');
-            if (lastBtn) {
-                lastBtn.addEventListener('click', () => {
-                    monitorCurrentPage = Math.ceil(filteredData.length / monitorItemsPerPage);
-                    displayMonitorData(title, excludedKeys);
-                });
-            }
+            document.getElementById("monitorSearchInput").addEventListener("input", (e) => {
+                monitorSearchTerm = e.target.value;
+                monitorCurrentPage = 1;
+                displayMonitorData(title);
+            });
         }
     });
 }
 
-// =================== LOGIC FOR LOGOUT/DELETE (Existing) ===================
+// =================== LOGOUT ===================
 
 const logoutAdminBtn = document.getElementById("logoutAdminBtn");
 if (logoutAdminBtn) {
     logoutAdminBtn.addEventListener("click", () => {
         window.location.href = "user-login.html";
-    });
-}
-
-const deleteAllUsersBtn = document.getElementById("deleteAllUsersBtn");
-if (deleteAllUsersBtn) {
-    deleteAllUsersBtn.addEventListener("click", async () => {
-
-        const result = await Swal.fire({
-            title: 'WARNING: Delete All Users?',
-            text: 'Are you sure you want to delete ALL users? This action cannot be undone.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Yes, delete all!'
-        });
-
-        if (!result.isConfirmed) {
-            return;
-        }
-
-        try {
-            // Note: BASE_URL points to /api/auth in common.js
-            const resultText = await deleteData("/delete-all-users");
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Deleted!',
-                text: resultText
-            });
-
-            loadUsers(); // Reload to update counts and chart
-        } catch (error) {
-            console.error("Error deleting users:", error);
-        }
     });
 }
