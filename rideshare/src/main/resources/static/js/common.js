@@ -1,7 +1,7 @@
 // js/common.js
 
 // IMPORTANT: BASE_URL MUST be enabled
-const BASE_URL = "http://localhost:8080/api/auth";
+const BASE_URL = "/api/auth";
 
 // Reusable POST request function
 async function postData(url = "", data = {}) {
