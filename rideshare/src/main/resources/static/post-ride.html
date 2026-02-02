@@ -23,6 +23,16 @@
                     display: none !important;
                 }
     </style>
+    <div id="footer"></div>
+
+    <script>
+        fetch("footer.html")
+          .then(res => res.text())
+          .then(data => {
+            document.getElementById("footer").innerHTML = data;
+          });
+    </script>
+
 </head>
 <body>
 <div class="back-nav"><a href="javascript:history.back()">&leftarrow; Back</a></div>
@@ -54,35 +64,52 @@
                 <button type="button" onclick="nextStep()">Next (Step 2)</button>
             </div>
         </div>
-
         <div id="step2" class="form-step hidden">
-            <h3>Pickup Locations (Optional, Max 4)</h3>
-            <label for="pickup1">Pickup 1</label>
-            <input type="text" id="pickup1" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
-            <label for="pickup2">Pickup 2</label>
-            <input type="text" id="pickup2" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
-            <label for="pickup3">Pickup 3</label>
-            <input type="text" id="pickup3" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
-            <label for="pickup4">Pickup 4</label>
-            <input type="text" id="pickup4" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
+            <div class="locations-grid">
 
-            <h3>Drop Locations (Optional, Max 4)</h3>
-            <label for="drop1">Drop 1</label>
-            <input type="text" id="drop1" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
-            <label for="drop2">Drop 2</label>
-            <input type="text" id="drop2" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
-            <label for="drop3">Drop 3</label>
-            <input type="text" id="drop3" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
-            <label for="drop4">Drop 4</label>
-            <input type="text" id="drop4" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
+                <!-- LEFT : Pickup -->
+                <div class="column">
+                    <h3>Pickup Locations (Optional, Max 4)</h3>
 
+                    <label for="pickup1">Pickup 1</label>
+                    <input type="text" id="pickup1" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
+
+                    <label for="pickup2">Pickup 2</label>
+                    <input type="text" id="pickup2" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
+
+                    <label for="pickup3">Pickup 3</label>
+                    <input type="text" id="pickup3" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
+
+                    <label for="pickup4">Pickup 4</label>
+                    <input type="text" id="pickup4" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
+                </div>
+
+
+                <!-- RIGHT : Drop -->
+                <div class="column">
+                    <h3>Drop Locations (Optional, Max 4)</h3>
+
+                    <label for="drop1">Drop 1</label>
+                    <input type="text" id="drop1" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
+
+                    <label for="drop2">Drop 2</label>
+                    <input type="text" id="drop2" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
+
+                    <label for="drop3">Drop 3</label>
+                    <input type="text" id="drop3" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
+
+                    <label for="drop4">Drop 4</label>
+                    <input type="text" id="drop4" list="location-suggestions" onkeyup="fetchLocationSuggestions(this)">
+                </div>
+            </div>
             <div class="navigation-buttons">
                 <button type="button" onclick="prevStep()">Back (Step 1)</button>
                 <button type="button" onclick="nextStep()">Next (Step 3)</button>
             </div>
         </div>
+</div>
 
-        <div id="step3" class="form-step hidden">
+        <div id="step3" class="form-container">
             <label for="vehicleName">Vehicle Name</label>
             <input type="text" id="vehicleName" required>
 

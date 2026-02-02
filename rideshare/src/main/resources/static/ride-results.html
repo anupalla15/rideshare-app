@@ -153,6 +153,18 @@
     .swal2-popup {
       font-size: 15px !important;
     }
+      .footer {
+  background: #4da6ff;
+  color: white;
+  text-align: center;
+  padding: 14px 0;
+  font-size: 14px;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+
   </style>
 </head>
 
@@ -435,5 +447,16 @@ async function bookRide(rideId, seats, farePerSeat) {
     }
 }
 </script>
+
+<div id="footer"></div>
+
+<script>
+    fetch("footer.html")
+      .then(res => res.text())
+      .then(data => {
+        document.getElementById("footer").innerHTML = data;
+      });
+</script>
+
 </body>
 </html>
