@@ -28,7 +28,8 @@ if (userLoginForm) {
         // --- NEW LOGIN STRATEGY: Try User Login first, then Admin Login ---
 
         // 1. Try Standard User Login (Passenger/Driver)
-        fetchUrl = `${BASE_URL}/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+       fetchUrl = `/api/auth/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+
 
         try {
             let response = await fetch(fetchUrl, { method: "POST" });
@@ -64,7 +65,7 @@ if (userLoginForm) {
             }
 
             // 2. If User Login Failed, Try Admin Login
-            fetchUrl = `${BASE_URL}/admin/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+            fetchUrl = `/api/auth/admin/login?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
             response = await fetch(fetchUrl, { method: "POST" });
             resultText = await response.text();
 
