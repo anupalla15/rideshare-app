@@ -6,17 +6,19 @@ import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 @Service
 public class EmailService {
-    @Autowired
-            (required = false)
+
+    @Autowired(required = false)
     private JavaMailSender mailSender;
 
-
-    // Use the username from application.properties as the sender's email
-    @Value("${spring.mail.username}")
+    @Value("${spring.mail.username:dummy@gmail.com}")
     private String senderEmail;
+
+    private boolean mailAvailable() {
+        return mailSender != null;
+    }
+
 
     public void sendTemporaryPassword(String toEmail, String name, String tempPassword) {
         SimpleMailMessage message = new SimpleMailMessage();
@@ -38,7 +40,9 @@ public class EmailService {
         message.setText(body);
 
         try {
-            mailSender.send(message);
+            if(mailAvailable()) {
+                mailSender.send(message);
+            }
             System.out.println("Temporary password email sent to: " + toEmail);
         } catch (Exception e) {
             System.err.println("Error sending email to " + toEmail + ": " + e.getMessage());
@@ -69,7 +73,9 @@ public class EmailService {
         message.setText(body);
 
         try {
-            mailSender.send(message);
+            if(mailAvailable()) {
+                mailSender.send(message);
+            }
             System.out.println("Ride post confirmation email sent to driver: " + toEmail);
         } catch (Exception e) {
             System.err.println("Error sending driver ride confirmation email to " + toEmail + ": " + e.getMessage());
@@ -101,7 +107,10 @@ public class EmailService {
         message.setText(body);
 
         try {
-            mailSender.send(message);
+            if(mailAvailable()) {
+                mailSender.send(message);
+            }
+
             System.out.println("Booking confirmation email sent to passenger: " + toEmail);
         } catch (Exception e) {
             System.err.println("Error sending passenger booking confirmation email to " + toEmail + ": " + e.getMessage());
@@ -128,7 +137,10 @@ public class EmailService {
         message.setText(body);
 
         try {
-            mailSender.send(message);
+            if(mailAvailable()) {
+                mailSender.send(message);
+            }
+
             System.out.println("Booking cancellation email sent to passenger: " + toEmail);
         } catch (Exception e) {
             System.err.println("Error sending passenger cancellation email to " + toEmail + ": " + e.getMessage());
@@ -155,7 +167,10 @@ public class EmailService {
         message.setText(body);
 
         try {
-            mailSender.send(message);
+            if(mailAvailable()) {
+                mailSender.send(message);
+            }
+
             System.out.println("Booking reschedule email sent to passenger: " + toEmail);
         } catch (Exception e) {
             System.err.println("Error sending passenger reschedule email to " + toEmail + ": " + e.getMessage());
