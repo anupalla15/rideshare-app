@@ -1,6 +1,7 @@
 // rideshare/src/main/resources/static/js/user-list.js
 
-const BASE_URL_AUTH = "http://localhost:8080/api/auth";
+const BASE_URL_AUTH = window.location.origin + "/api/auth";
+
 let allUsers = []; // Store all fetched users
 let filteredUsers = []; // Store currently filtered users (by role and search term)
 let currentPage = 0;

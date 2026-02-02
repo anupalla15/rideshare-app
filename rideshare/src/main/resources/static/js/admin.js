@@ -11,7 +11,8 @@ document.getElementById("adminLoginForm").addEventListener("submit", async (e) =
     }
 
     try {
-        const response = await fetch("http://localhost:8080/api/auth/admin/login", {
+        fetch(BASE_URL + "/admin/login", {
+
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",

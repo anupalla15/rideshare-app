@@ -1,5 +1,6 @@
 // BASE URL for backend API
-const BASE_URL = "http://localhost:8080/api/auth";
+const BASE_URL = window.location.origin + "/api/auth";
+
 
 // =================== RESET PASSWORD ===================
 const resetForm = document.getElementById("resetPasswordForm");

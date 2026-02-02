@@ -2,7 +2,8 @@
 
 let allUsers = [];
 let userRoleChartInstance = null; // Pie chart instance
-BASE_REPORT_URL = "http://localhost:8080/api/"
+const BASE_REPORT_URL = "/api/";
+
  // Monitoring endpoints
 // =================== BUTTON AND NAVIGATION ===================
 
