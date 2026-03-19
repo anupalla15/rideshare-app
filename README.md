@@ -29,6 +29,10 @@ The Dynamic Ride-Sharing and Carpooling Platform is a web-based application that
 ![Login](image.png)
 
 
+### 📊 Dashboard
+![Dashboard](image.png)
+
+
 ## ⚙️ Installation & Setup
 
 1. Clone the repository:
