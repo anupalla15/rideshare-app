@@ -15,10 +15,10 @@ The Dynamic Ride-Sharing and Carpooling Platform is a web-based application that
 
 
 ## 🛠️ Tech Stack
-- **Frontend:** HTML, CSS, JavaScript  
-- **Backend:** (mention your backend, e.g., Java / Node.js)  
-- **Database:** (e.g., MySQL)  
-- **Tools:** Git, GitHub, VS Code  
+- **Frontend:** HTML, CSS, JavaScript, React.js  
+- **Backend:** Java, Spring Boot  
+- **Database:** MySQL  
+- **Tools:** Git, GitHub, IntelliJ IDEA, VS Code  
 
 
 ## ⚙️ Installation & Setup
