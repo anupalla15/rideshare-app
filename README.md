@@ -18,7 +18,12 @@ The Dynamic Ride-Sharing and Carpooling Platform is a web-based application that
 - **Frontend:** HTML, CSS, JavaScript, React.js  
 - **Backend:** Java, Spring Boot  
 - **Database:** MySQL  
-- **Tools:** Git, GitHub, IntelliJ IDEA, VS Code  
+- **Tools:** Git, GitHub, IntelliJ IDEA, VS Code
+
+ ## 📸 Screenshots
+
+### 🏠 Home Page
+![Home](screenshots/Home.png)
 
 
 ## ⚙️ Installation & Setup
@@ -26,3 +31,5 @@ The Dynamic Ride-Sharing and Carpooling Platform is a web-based application that
 1. Clone the repository:
    ```bash
    git clone https://github.com/anupalla15/rideshare-app.git
+
+   
